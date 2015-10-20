@@ -66,6 +66,7 @@ int MySound::init(void)
 		return 0;
 }
 
+		unsigned int period_num;
 int MySound::capture(FILE*fp, int seconds)
 {
 		// malloc a buffer large enough to hold data of one period
@@ -81,8 +82,8 @@ int MySound::capture(FILE*fp, int seconds)
 		}
 
 		// calculate periods
-		unsigned int period_num;
 		snd_pcm_hw_params_get_period_time(params, &period_num, &dir);
+		cout << "period time: " << period_num << endl;
 
 		//now start to capture
 		long loops = seconds * 1000000 / period_num;
