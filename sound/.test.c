@@ -5,7 +5,9 @@
 
 #define SOUND_SPEED 340
 #define HEAD_WIDTH 0.15
-#define WAVE_PEAK  (double)(1L<<12)
+#define POW_NUMBER 1.2
+
+#define WAVE_PEAK  (double)(1L<<15)
 // 44.1kbps
 #define WAVE_SAMP 44100
 
@@ -18,18 +20,22 @@ int main(int argc, char** argv)
 		int i;
 		int wave_freq;
 		int sign = 0;
-		double wave_scale, time;
+		double time;
 		double wave_diff;
 		double phace_top;
+		double wave_scale;
+		int wave_scale_i;
 
-		if(argc != 3)
+		if(argc != 4)
 		{
-				printf("Usage: ./.test xxx 0.xxxxxx\n");
+				printf("Usage: ./.test xxx 0.xxxxxx [0~15]\n");
 				return -1;
 		}
 		sscanf(argv[1], "%d", &wave_freq);
 		sscanf(argv[2], "%lf", &wave_diff);
-		printf("input: %lf\n", wave_diff);
+		sscanf(argv[3], "%d", &wave_scale_i);
+		
+		wave_scale = (double)(1L << wave_scale_i);
 
 		time = 0;
 		i = 0;
@@ -48,26 +54,24 @@ int main(int argc, char** argv)
 					  phace_diff += wave_diff * PI;
 					else
 					  phace_diff -= wave_diff * PI;
-
-					//printf("\xd%f", phace_diff);
 				}
 
 				if(phace_diff > phace_top)
 				{
-					//printf("top");
 					phace_diff -= wave_diff * PI;
 					sign = 1;
 				}
 				else if(phace_diff < -phace_top)
 				{
-					//printf("low");
 					phace_diff += wave_diff * PI;
 					sign = 0;
 				}
 
-				result = (int)(WAVE_PEAK * sin(time * WAVE_OMEGA + phace_diff));
+				result = (int)(wave_scale * sin(time * WAVE_OMEGA + phace_diff));
+				result *= pow(POW_NUMBER, phace_diff);
 				write(1, &result, sizeof(short));
-				result = (int)(WAVE_PEAK * sin(time * WAVE_OMEGA));
+				result = (int)(wave_scale * sin(time * WAVE_OMEGA));
+				result *= pow(POW_NUMBER, -phace_diff);
 				write(1, &result, sizeof(short));
 				
 				time += WAVE_SCALE;
