@@ -12,14 +12,6 @@ int main() {
   int dir;
   snd_pcm_uframes_t frames;
   char *buffer;
-  FILE *fp;
-
-  fp = fopen("sound.wav", "r");
-  if(fp == NULL)
-  {
-	  printf("file error \n");
-	  return -1;
-  }
 
   /* Open PCM device for playback. */
   rc = snd_pcm_open(&handle, "default",
